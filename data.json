@@ -1,0 +1,8 @@
+[
+    ["I love AI", "我愛人工智慧"],
+    ["Deep learning is fun", "深度學習很有趣"],
+    ["Transformer is powerful", "變壓器模型很強大"],
+    ["This is a long sentence to test padding mechanism", "這是一個用來測試填充機制的句子"],
+    ["GPU makes training faster", "GPU讓訓練變更快"],
+    ["Seq2Seq model is cool", "序列到序列模型很酷"]
+]
