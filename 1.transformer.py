@@ -21,8 +21,8 @@ print(f"目前使用的運算裝置: {device}")
 # ======================================================
 import json
 # 讀取 JSON
-with open("data.json", "r", encoding="utf-8") as f:
-    raw_data = json.load(f)
+# with open("data.json", "r", encoding="utf-8") as f:
+#     raw_data = json.load(f)
 
 # raw_data = [
 #     ("I love AI", "我愛人工智慧"),
@@ -32,6 +32,21 @@ with open("data.json", "r", encoding="utf-8") as f:
 #     ("GPU makes training faster", "GPU讓訓練變更快"),
 #     ("Seq2Seq model is cool", "序列到序列模型很酷"),
 # ]
+
+import pandas as pd
+# 讀取 Excel (pip install openpyxl)
+# ------------------
+# df = pd.read_excel("data.xlsx")  # 預設讀第一個 sheet
+# # 假設欄位叫 english, chinese
+# raw_data = list(zip(df["english"], df["chinese"]))
+
+# print(raw_data[:3])
+# ------------------
+# 讀取 csv
+import pandas as pd
+df = pd.read_csv("data.csv")
+raw_data = list(zip(df["英文"], df["中文"]))
+print(raw_data[:3])
 
 
 # ======================================================
@@ -67,7 +82,14 @@ class SimpleTokenizer:
         return [self.word2idx.get(w, 3) for w in words]
 
     def decode(self, indices):
-        return "".join([self.idx2word.get(idx, "") for idx in indices if idx not in [0, 1, 2]])
+        words = []
+        for idx in indices:
+            if idx == 2:  # <EOS>
+                break
+            if idx in [0, 1]:
+                continue
+            words.append(self.idx2word.get(idx, ""))
+        return "".join(words)
 
 # 建立 英文 tokenizer，負責把英文轉成 token IDs → 給 Encoder 用。
 src_tokenizer = SimpleTokenizer(raw_data, 0)
@@ -118,6 +140,7 @@ def collate_fn(batch):
         src_batch.append(src_sample)
         tgt_batch.append(tgt_sample)
 
+    # 把「長度不一樣的句子」補齊成同一長度，++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     src_padded = pad_sequence(src_batch, batch_first=True, padding_value=0)
     tgt_padded = pad_sequence(tgt_batch, batch_first=True, padding_value=0)
     return src_padded, tgt_padded
